@@ -1,11 +1,15 @@
-﻿using DnsTools.Commands.Settings;
+﻿using DnsTools.Commands.Config;
+using DnsTools.Commands.Settings;
 using DnsTools.Commands.Zone;
 using DnsTools.Http;
+using DnsTools.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 using ThwCalendarExporter.DependencyInjection;
 
 var services = new ServiceCollection();
+
+services.AddSingleton<EnvironmentConfigService>();
 
 //Http
 services.AddSingleton<BaseHttpClient>();
@@ -19,6 +23,14 @@ app.Configure(config =>
     config.PropagateExceptions();
     config.ValidateExamples();
 #endif
+    config.AddBranch<ConfigSettings>("config", add =>
+    {
+        add.AddBranch<ConfigSettings.TokenSettings>("token", add =>
+        {
+            add.AddCommand<GetTokenCommand>("get");
+            add.AddCommand<SetTokenCommand>("set");
+        });
+    });
     config.AddBranch<ZoneSettings>("zone", add =>
     {
         add.AddCommand<GetZonesCommand>("get");
