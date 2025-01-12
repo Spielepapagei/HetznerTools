@@ -1,13 +1,18 @@
+using DnsTools.Services;
+
 namespace DnsTools.Http;
 
 public class BaseHttpClient
 {
     public readonly HttpClient Client;
+    private readonly EnvironmentConfigService EnvConfigService;
 
-    public BaseHttpClient()
+    public BaseHttpClient(EnvironmentConfigService envConfigService)
     {
+        EnvConfigService = envConfigService;
+        
         Client = new HttpClient();
         Client.BaseAddress = new Uri("https://dns.hetzner.com/api/v1/");
-        Client.DefaultRequestHeaders.Add("Auth-API-Token", "<TOKEN>");
+        Client.DefaultRequestHeaders.Add("Auth-API-Token", EnvConfigService.Get().Token);
     }
 }

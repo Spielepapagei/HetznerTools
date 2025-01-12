@@ -4,8 +4,10 @@ using DnsTools.Commands.Zone;
 using DnsTools.Http;
 using DnsTools.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Spectre.Console;
 using Spectre.Console.Cli;
 using ThwCalendarExporter.DependencyInjection;
+using ThwCalendarExporter.Helper;
 
 var services = new ServiceCollection();
 
@@ -31,12 +33,24 @@ app.Configure(config =>
             add.AddCommand<SetTokenCommand>("set");
         });
     });
-    config.AddBranch<ZoneSettings>("zone", add =>
+    
+    config.AddBranch<ZoneSettings>("zones", add =>
     {
-        add.AddCommand<GetZonesCommand>("get");
+        add.SetDefaultCommand<ZonesCommand>();
+        add.AddCommand<ZonesCommand>("get");
         add.AddCommand<CreateZoneCommand>("create");
-        add.AddCommand<UpdateZoneCommand>("update");
-        add.AddCommand<DeleteZoneCommand>("delete");
+    });
+    
+    config.SetExceptionHandler((ex, resolver) =>
+    {
+        if (ex.Message.Contains("Unknown command"))
+        {
+            AnsiConsole.MarkupLine($"{LogPrefixes.Error} {ex.Message}");
+        }
+        else
+        { 
+            AnsiConsole.WriteException(ex, ExceptionFormats.ShortenEverything);
+        }
     });
 });
 

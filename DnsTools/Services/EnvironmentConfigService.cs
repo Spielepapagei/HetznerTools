@@ -21,7 +21,7 @@ public class EnvironmentConfigService
     {
         foreach (var prop in typeof(EnvironmentConfig).GetProperties())
         {
-            var envVar = Environment.GetEnvironmentVariable(prop.Name);
+            var envVar = Environment.GetEnvironmentVariable(prop.Name, EnvironmentVariableTarget.User);
             prop.SetValue(Data, envVar);
         }
         
@@ -38,7 +38,7 @@ public class EnvironmentConfigService
             {
                 throw new NotSupportedException();
             }
-            Environment.SetEnvironmentVariable(property.Name, value.ToString());
+            Environment.SetEnvironmentVariable(property.Name, value.ToString(), EnvironmentVariableTarget.User);
         }
     }
 }

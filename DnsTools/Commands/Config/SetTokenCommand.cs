@@ -24,7 +24,7 @@ public class SetTokenCommand : AsyncCommand<ConfigSettings.TokenSettings.SetToke
         EnvConfigService.Get().Token = password;
         EnvConfigService.Save(EnvConfigService.Get());
         
-        AnsiConsole.MarkupLine($"{LogPrefixes.Sucsess} Set new Token.");
+        AnsiConsole.MarkupLine($"{LogPrefixes.Sucsess} New Token Set.");
 
         return 0;
     }

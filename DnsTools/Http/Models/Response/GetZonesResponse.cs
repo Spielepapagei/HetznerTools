@@ -2,12 +2,13 @@ namespace DnsTools.Http.Models.Response;
 
 public class GetZonesResponse
 {
-    public MetaData Meta { get; set; }
-    public List<ZoneModel> Zones { get; set; } = new();
+    public List<ZoneModel>? Zones { get; set; } = new();
+    public ZoneModel? Zone { get; set; } = new();
+    public MetaData? Meta { get; set; }
     
     public class MetaData
     {
-        public PaginationData Pagination { get; set; }
+        public PaginationData? Pagination { get; set; }
         
         public class PaginationData
         {
