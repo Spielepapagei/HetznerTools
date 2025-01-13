@@ -11,7 +11,9 @@ public static class ServiceCollectionExtensions
         onConfigure.Invoke(configuration);
         collection.AddSingleton(configuration);
         
-        collection.AddSingleton<HetznerApiHttpClient>();
+        //Add Clients
+        collection.AddSingleton<HetznerApiHttpClient>(); 
+        collection.AddSingleton<ZonesClient>();
     }
 
 }

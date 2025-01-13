@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DnsTools", "DnsTools\DnsToo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DnsApiClient", "DnsApiClient\DnsApiClient.csproj", "{18B73D3B-49D5-461A-BD58-DAEC5DC67EDB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DnsApiClient.Test", "DnsApiClient.Test\DnsApiClient.Test.csproj", "{017E8D11-3639-4BBD-8CE3-CA85E15D9A7D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{18B73D3B-49D5-461A-BD58-DAEC5DC67EDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18B73D3B-49D5-461A-BD58-DAEC5DC67EDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18B73D3B-49D5-461A-BD58-DAEC5DC67EDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{017E8D11-3639-4BBD-8CE3-CA85E15D9A7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{017E8D11-3639-4BBD-8CE3-CA85E15D9A7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{017E8D11-3639-4BBD-8CE3-CA85E15D9A7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{017E8D11-3639-4BBD-8CE3-CA85E15D9A7D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

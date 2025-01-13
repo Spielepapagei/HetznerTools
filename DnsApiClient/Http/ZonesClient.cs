@@ -1,18 +1,19 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using DnsApiClient.Models;
 using DnsApiClient.Models.Request;
 using DnsApiClient.Models.Response;
 using ThwCalendarExporter.Helper;
 
-namespace DnsApiClient.Http.Zones;
+namespace DnsApiClient.Http;
 
-public class ZoneClient
+public class ZonesClient
 {
     public readonly HetznerApiHttpClient Http;
 
-    public ZoneClient(HetznerApiHttpClient http)
+    public ZonesClient(HetznerApiHttpClient http)
     {
         Http = http;
     }
@@ -27,7 +28,7 @@ public class ZoneClient
         result.StatusCode = zoneResponse.StatusCode;
         if (zoneResponse.StatusCode != HttpStatusCode.OK)
         {
-            result.Message = "Server responded with:";
+            result.Message = $"Server responded with: {result.StatusCode} ";
             return result;
         }    
         
@@ -56,7 +57,7 @@ public class ZoneClient
         result.StatusCode = zoneResponse.StatusCode;
         if (zoneResponse.StatusCode != HttpStatusCode.OK)
         {
-            result.Message = "Server responded with:";
+            result.Message = $"Server responded with: {result.StatusCode} ";
             return result;
         }    
         
@@ -79,6 +80,7 @@ public class ZoneClient
     public async Task<ActionResponse<ZoneModel>> CreateZone(CreateZoneRequest data)
     {
         var result = new ActionResponse<ZoneModel>();
+        data.Name = data.Name.ToLower();
         
         //Api Interaction
         var zoneResponse = await Http.Client.PostAsync(
@@ -89,7 +91,7 @@ public class ZoneClient
         result.StatusCode = zoneResponse.StatusCode;
         if (zoneResponse.StatusCode != HttpStatusCode.OK)
         {
-            result.Message = "Server responded with:";
+            result.Message = $"Server responded with: {result.StatusCode}";
             return result;
         }    
         
@@ -112,6 +114,7 @@ public class ZoneClient
     public async Task<ActionResponse<ZoneModel>> UpdateZone(string zoneId, CreateZoneRequest data)
     {
         var result = new ActionResponse<ZoneModel>();
+        data.Name = data.Name.ToLower();
         
         //Api Interaction
         var zoneResponse = await Http.Client.PutAsync(
@@ -122,7 +125,7 @@ public class ZoneClient
         result.StatusCode = zoneResponse.StatusCode;
         if (zoneResponse.StatusCode != HttpStatusCode.OK)
         {
-            result.Message = "Server responded with:";
+            result.Message = $"Server responded with: {result.StatusCode}";
             return result;
         }    
         
@@ -152,7 +155,7 @@ public class ZoneClient
         result.StatusCode = zoneResponse.StatusCode;
         if (zoneResponse.StatusCode != HttpStatusCode.OK)
         {
-            result.Message = "Server responded with:";
+            result.Message = $"Server responded with: {result.StatusCode}";
             return result;
         }    
 
@@ -179,7 +182,7 @@ public class ZoneClient
         result.StatusCode = zoneResponse.StatusCode;
         if (zoneResponse.StatusCode != HttpStatusCode.OK)
         {
-            result.Message = "Server responded with:";
+            result.Message = $"Server responded with: {result.StatusCode}";
             return result;
         }    
         
@@ -209,7 +212,7 @@ public class ZoneClient
         result.StatusCode = zoneResponse.StatusCode;
         if (zoneResponse.StatusCode != HttpStatusCode.OK)
         {
-            result.Message = "Server responded with:";
+            result.Message = $"Server responded with: {result.StatusCode}";
             return result;
         }
         
@@ -227,17 +230,17 @@ public class ZoneClient
     public async Task<ActionResponse<GetZoneValidationResponse>> ValidateZoneFile(string zoneFileAsString)
     {
         var result = new ActionResponse<GetZoneValidationResponse>();
+        var fixedZoneFileAsString = zoneFileAsString.Replace("\r", "");
+        var content = new StringContent(fixedZoneFileAsString, Encoding.UTF8, "text/plain");
         
         //Api Interaction
         var zoneResponse = await Http.Client.PostAsync(
             $"zones/file/validate",
-            new StringContent(
-                zoneFileAsString
-                ));
+            content);
         result.StatusCode = zoneResponse.StatusCode;
         if (zoneResponse.StatusCode != HttpStatusCode.OK)
         {
-            result.Message = "Server responded with:";
+            result.Message = $"Server responded with: {result.StatusCode}";
             return result;
         }
         

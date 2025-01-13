@@ -8,4 +8,9 @@ public static class JsonHelper
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
+    
+    public static JsonSerializerOptions EnumOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
 }
