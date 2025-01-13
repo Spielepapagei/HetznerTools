@@ -1,11 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using DnsApiClient.Helper;
 using DnsApiClient.Models;
 using DnsApiClient.Models.Request;
 using DnsApiClient.Models.Response;
-using Spectre.Console;
-using ThwCalendarExporter.Helper;
 
 namespace DnsApiClient.Http;
 

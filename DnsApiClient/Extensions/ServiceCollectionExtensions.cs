@@ -1,3 +1,4 @@
+using DnsApiClient.Configuration;
 using DnsApiClient.Http;
 using Microsoft.Extensions.DependencyInjection;
 
