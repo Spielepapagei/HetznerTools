@@ -1,6 +1,7 @@
-using System.Runtime.InteropServices;
+using DnsApiClient.Extensions;
 using DnsApiClient.Http;
 using DnsApiClient.Models.Request;
+using DnsApiClient.Test.Extensions;
 using DnsApiClient.Test.Helper;
 using Spectre.Console;
 

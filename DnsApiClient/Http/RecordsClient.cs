@@ -5,7 +5,6 @@ using DnsApiClient.Helper;
 using DnsApiClient.Models;
 using DnsApiClient.Models.Request;
 using DnsApiClient.Models.Response;
-using Spectre.Console;
 
 namespace DnsApiClient.Http;
 
