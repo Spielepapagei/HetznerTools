@@ -4,6 +4,7 @@ using System.Text.Json;
 using DnsApiClient.Models;
 using DnsApiClient.Models.Request;
 using DnsApiClient.Models.Response;
+using Spectre.Console;
 using ThwCalendarExporter.Helper;
 
 namespace DnsApiClient.Http;
@@ -18,12 +19,12 @@ public class RecordsClient
     }
     
     #region GetAllRecords
-    public async Task<ActionResponse<GetRecordsResponse>> GetAllRecords(string zoneId, int? page = null, int? pageSize = null)
+    public async Task<ActionResponse<GetRecordsResponse>> GetAllRecords(string? zoneId = null, int? page = null, int? pageSize = null)
     {
         var result = new ActionResponse<GetRecordsResponse>();
-
+        
         //Add Parameters
-        var reqArgs = $"zone_id={zoneId}";
+        var reqArgs = $"?zone_id={zoneId}";
         if (page >= 1)
         {
             result.Message = "Page must match '>= 1'";
@@ -59,7 +60,36 @@ public class RecordsClient
         }
 
         //Return Result
-        result.Message = "Successfully got records from Server.";
+        result.Message = "Successfully got records from server.";
+        result.Data = records;
+        return result;
+    }
+    #endregion
+    
+    #region GetRecord
+    public async Task<ActionResponse<GetRecordResponse>> GetRecord(string recordId)
+    {
+        var result = new ActionResponse<GetRecordResponse>();
+        
+        //Api Interaction
+        var zoneResponse = await Http.Client.GetAsync($"records/{recordId}");
+        result.StatusCode = zoneResponse.StatusCode;
+        if (zoneResponse.StatusCode != HttpStatusCode.OK)
+        {
+            result.Message = $"Server responded with: {result.StatusCode}";
+            return result;
+        }    
+        
+        //Process Result
+        var records = await zoneResponse.Content.ReadFromJsonAsync<GetRecordResponse>(JsonHelper.DefaultOptions);
+        if (records == null)
+        {
+            result.Message = "Bad json data.";
+            return result;
+        }
+
+        //Return Result
+        result.Message = "Successfully got record from server.";
         result.Data = records;
         return result;
     }
@@ -69,12 +99,12 @@ public class RecordsClient
     public async Task<ActionResponse<GetRecordResponse>> CreateRecord(CreateRecordRequest data)
     {
         var result = new ActionResponse<GetRecordResponse>();
+        var content = new StringContent(JsonSerializer.Serialize(data, JsonHelper.ExportOptions));
         
         //Api Interaction
-        var zoneResponse = await Http.Client.PostAsync("records",
-            new StringContent(
-                JsonSerializer.Serialize(data)
-            ));
+        var zoneResponse = await Http.Client.PostAsync(
+            "records",
+            content);
         result.StatusCode = zoneResponse.StatusCode;
         if (zoneResponse.StatusCode != HttpStatusCode.OK)
         {
@@ -91,7 +121,7 @@ public class RecordsClient
         }
 
         //Return Result
-        result.Message = "Successfully got records from Server.";
+        result.Message = "Successfully created record on server.";
         result.Data = record;
         return result;
     }
@@ -123,16 +153,16 @@ public class RecordsClient
         }
 
         //Return Result
-        result.Message = "Successfully got records from Server.";
+        result.Message = "Successfully updated record on server.";
         result.Data = records;
         return result;
     }
     #endregion
     
     #region DeleteRecord
-    public async Task<ActionResponse<GetRecordsResponse>> GetRecord(string recordId)
+    public async Task<ActionResponse<string>> DeleteRecord(string recordId)
     {
-        var result = new ActionResponse<GetRecordsResponse>();
+        var result = new ActionResponse<string>();
         
         //Api Interaction
         var zoneResponse = await Http.Client.DeleteAsync($"records/{recordId}");
@@ -141,19 +171,11 @@ public class RecordsClient
         {
             result.Message = $"Server responded with: {result.StatusCode}";
             return result;
-        }    
-        
-        //Process Result
-        var records = await zoneResponse.Content.ReadFromJsonAsync<GetRecordsResponse>(JsonHelper.DefaultOptions);
-        if (records == null)
-        {
-            result.Message = "Bad json data.";
-            return result;
         }
 
         //Return Result
-        result.Message = "Successfully got records from Server.";
-        result.Data = records;
+        result.Message = "Successfully deleted record from server.";
+        result.Data = recordId;
         return result;
     }
     #endregion

@@ -14,6 +14,7 @@ public static class ServiceCollectionExtensions
         //Add Clients
         collection.AddSingleton<HetznerApiHttpClient>(); 
         collection.AddSingleton<ZonesClient>();
+        collection.AddSingleton<RecordsClient>();
     }
 
 }

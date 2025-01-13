@@ -18,6 +18,7 @@ serviceCollection.AddHetznerDnsApi(configuration =>
 });
 
 serviceCollection.AddSingleton<ZoneTest>();
+serviceCollection.AddSingleton<RecordTest>();
 
 var serviceProvider = serviceCollection.BuildServiceProvider();
 

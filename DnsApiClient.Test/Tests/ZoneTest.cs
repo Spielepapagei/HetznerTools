@@ -9,97 +9,82 @@ namespace DnsApiClient.Test.Tests;
 public class ZoneTest
 {
     private readonly ZonesClient Client;
+    private readonly RecordTest RecordTest;
+    private string ZoneId = "";
 
-    public ZoneTest(ZonesClient client)
+    public ZoneTest(ZonesClient client, RecordTest recordTest)
     {
         Client = client;
+        RecordTest = recordTest;
     }
-    
+
     public async Task Test()
     {
-        await CreateGetUpdateDeleteZone("DnsApiClient.dev", 86400);
+        try
+        {
+            await CreateGetUpdateDeleteZone(new CreateZoneRequest
+            {
+                Name = "DnsApiClient.dev",
+                Ttl = 86400
+            });
+
+            //Start RecordTest
+            await RecordTest.Test(ZoneId);
+        }
+        catch (Exception ex)
+        {
+            AnsiConsole.WriteException(ex, ExceptionFormats.ShortenPaths | ExceptionFormats.ShortenMethods);
+        }
         
+        //Delete Zone
+        var zone = await Client.DeleteZone(ZoneId);
+        zone.TryGetData("Failed to delete Zone");
         
+        //Finished Tests
         AnsiConsole.WriteLine("Successfully finished Zone Test.");
     }
 
-    private async Task CreateGetUpdateDeleteZone(string zoneName, int ttl)
+    private async Task CreateGetUpdateDeleteZone(CreateZoneRequest data)
     {
         await AnsiConsole.Status()
             .Spinner(Spinner.Known.Dots).SpinnerStyle(Style.Parse("green"))
-            .StartAsync("Creating Zone...", async ctx  =>
+            .StartAsync("init...", async ctx =>
             {
-                var data = new CreateZoneRequest
-                {
-                    Name = zoneName.ToLower(),
-                    Ttl = ttl
-                };
-
-                
-                //Creating Zone
+                //Create Zone
+                ctx.Status("Creating Zone");
                 var x1 = await Client.CreateZone(data);
-                if (x1.Data == null)
-                {
-                    AnsiConsole.MarkupLine($"Creating Zone: {x1.Message}");
-                    throw new Exception();
-                }
-                AnsiConsole.MarkupLine(x1.Message);
-                
-                //Getting zoneId for next Step
-                var zoneId = x1.Data.Id;
-                if (zoneId == null)
-                {
-                    AnsiConsole.MarkupLine($"Failed to get zoneId: {zoneName}");
-                    if(x1.Data != null) await DeleteZone(x1.Data.Id);
-                    throw new Exception();
-                }
-                
-                //Getting All Zone Data
-                ctx.Status("Getting all zone Data...");
+                var createdZone = x1.TryGetData("Failed to create zone");
+                ZoneId = createdZone.Id;
+
+                //Get all zones
+                ctx.Status("Getting all zones");
                 var x2 = await Client.GetZones();
-                if (x2.Data == null)
-                {
-                    AnsiConsole.MarkupLine($"Failed all zone data: {x2.Message}");
-                    if(x1.Data != null) await DeleteZone(x1.Data.Id);
-                    throw new Exception();
-                }
-                AnsiConsole.MarkupLine(x2.Message);
-                
-                
-                //Getting Zone Data
-                ctx.Status("Getting zone data...");
-                var x3 = await Client.GetZone(zoneId);
-                if (x3.Data == null)
-                {
-                    AnsiConsole.MarkupLine($"Failed getting zone data: {x3.Message}");
-                    if(x1.Data != null) await DeleteZone(x1.Data.Id);
-                    throw new Exception();
-                }
-                AnsiConsole.MarkupLine(x3.Message);
-                
-                
-                //Updating Zone
+                x2.TryGetData("Failed to get all zones");
+
+
+                //Get Zone
+                ctx.Status("Getting Zone");
+                var x3 = await Client.GetZone(createdZone.Id);
+                x3.TryGetData("Failed to get zone");
+
+
+                //Update Zone
                 ctx.Status("Updating zone...");
                 data.Ttl -= 4000;
-                var x4 = await Client.UpdateZone(zoneId, data);
-                if (x4.Data == null)
-                {
-                    AnsiConsole.MarkupLine($"Failed updating zone: {x4.Message}");
-                    if(x1.Data != null) await DeleteZone(x1.Data.Id);
-                    throw new Exception();
-                }
-                AnsiConsole.MarkupLine(x4.Message);
-                
-                
+                var x4 = await Client.UpdateZone(createdZone.Id, data);
+                x4.TryGetData("Failed updating zone");
+
+
                 // Load zoneFile
                 ctx.Status("Loading ZoneFile...");
                 var fileExists = File.Exists(PathBuilder.File("storage", "zone"));
                 if (!fileExists)
                 {
                     AnsiConsole.MarkupLine("Please Create a file at ./storage/zone");
-                    if(x1.Data != null) await DeleteZone(x1.Data.Id);
+                    if (x1.Data != null) await DeleteZone(createdZone.Id);
                     throw new FileNotFoundException();
                 }
+
                 AnsiConsole.MarkupLine("Successfully Loaded zoneFile from disk.");
 
                 var zoneFile = await File.ReadAllTextAsync(PathBuilder.File("storage", "zone"));
@@ -133,17 +118,12 @@ public class ZoneTest
                 }
                 AnsiConsole.MarkupLine(x6.Message);
                 */
-    
+
                 ctx.Status("Exporting ZoneFile...");
                 data.Name += "v";
-                var x7 = await Client.ExportZoneFile(zoneId);
-                if (x7.Data == null)
-                {
-                    AnsiConsole.MarkupLine($"Failed exporting ZoneFile: {x7.Message}");
-                    if(x1.Data != null) await DeleteZone(x1.Data.Id);
-                    throw new Exception();
-                }
-                
+                var x7 = await Client.ExportZoneFile(createdZone.Id);
+                x7.TryGetData("Failed to export ZoneFile");
+
                 /*
                 if (x7.Data != zoneFile.Replace("\r", ""))
                 {
@@ -152,25 +132,12 @@ public class ZoneTest
                     throw new Exception();
                 }
                 */
-                AnsiConsole.MarkupLine(x7.Message);
-                
-                
-                ctx.Status("Deleting Zone...");
-                if(x1.Data != null) await DeleteZone(x1.Data.Id);
             });
     }
-
+    
     private async Task DeleteZone(string zoneId)
     {
-        var x0 = await Client.DeleteZone(zoneId);
-        if (x0.Data == null)
-        {
-            AnsiConsole.MarkupLine(x0.Message);
-            throw new Exception();
-        }
-        AnsiConsole.MarkupLine(x0.Message);
+        var zone = await Client.DeleteZone(zoneId);
+        zone.TryGetData("Failed to delete Zone");
     }
-
-
-
 }
