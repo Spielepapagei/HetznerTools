@@ -1,3 +1,5 @@
+using DnsApiClient.Configuration;
+
 namespace DnsApiClient.Http;
 
 public class HetznerApiHttpClient

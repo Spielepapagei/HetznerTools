@@ -1,4 +1,4 @@
-namespace DnsApiClient;
+namespace DnsApiClient.Configuration;
 
 public class HttpClientConfiguration
 {
