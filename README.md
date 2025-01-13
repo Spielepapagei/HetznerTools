@@ -27,4 +27,4 @@ Like the name allready says this is a Libaray/Client Implementations for the Api
 
 ## License
 
-Distributed under the GNU General Public License v3.0. See [LICENSE](https://github.com/Spielepapagei/HetznerTools/blob/development/LICENSE) for more information.
+Distributed under the GNU General Public License v3.0. See [LICENSE](https://github.com/Spielepapagei/HetznerTools/blob/stable/LICENSE) for more information.
