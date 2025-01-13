@@ -421,9 +421,11 @@ FodyWeavers.xsd
 .idea/**/libraries
 
 # Moonlight
-Echo/storage/**
-/.idea/.idea.Echo/.idea
+storage/
+/.idea/.idea.Moonlight/.idea
 style.min.css
-*.lockb
-Echo/Styles/package-lock.json
-/Honeypot/wwwroot/images
+core.min.css
+
+# Build script for nuget packages
+finalPackages/
+nupkgs/
